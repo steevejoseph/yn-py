@@ -30,6 +30,7 @@ def handle_chat():
 
     content = data.get("content")
     role = data.get("role") or "helpful assistant"
+    language = data.get("language") or data.get("lang") or "english"
     
     if content == None:
         return  Response("Please specify 'content' in your json", status=400, mimetype="application/json")
@@ -38,6 +39,7 @@ def handle_chat():
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": f"Speak as if you were a {role}."},
+            {"role": "system", "content": f"Return in the {language} language."},
             {
                 "role": "user",
                 "content": content
