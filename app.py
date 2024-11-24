@@ -1,7 +1,9 @@
 from flask import Flask, request, Response
 from openai import OpenAI
 import os
+
 from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 api_key = os.environ["YN_KEY"]
@@ -15,12 +17,10 @@ class ResponseMessage:
     
 @app.route('/', methods=["GET"])
 def handle_home():
-    return Response(None, 200)
+    return Response("Welcome to API", 200)
 
 @app.route('/chat', methods=['POST'])
 def handle_chat():
-    print("d:", request.data)
-    
     try:
         data = request.get_json()
     except:
@@ -48,3 +48,7 @@ def handle_chat():
         
     responseMessage = completion.choices[0].message.content
     return Response(responseMessage, 200, mimetype="application/json")
+
+PORT = os.environ.get("PORT") or 8080
+if __name__ == "__main__":
+    app.run(port=PORT, debug=True, host="0.0.0.0")
