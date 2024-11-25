@@ -2,6 +2,7 @@ from flask import Flask, request, Response, render_template
 from openai import OpenAI
 import os
 from flask_cors import CORS
+import json
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -32,7 +33,6 @@ def handle_chat():
 
     content = data.get("content")
     role = data.get("role") or "helpful assistant"
-    language = data.get("language") or data.get("lang") or "english"
     
     if content == None:
         return  Response("Please specify 'content' in your json", status=400, mimetype="application/json")
@@ -41,7 +41,6 @@ def handle_chat():
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": f"Speak as if you were a {role}."},
-            {"role": "system", "content": f"Return in the {language} language."},
             {
                 "role": "user",
                 "content": content
@@ -51,7 +50,8 @@ def handle_chat():
     )
         
     responseMessage = completion.choices[0].message.content
-    return Response({"message": responseMessage}, 200, mimetype="application/json")
+    return_json = json.dumps({"message": responseMessage})
+    return Response(return_json, 200, mimetype="application/json")
 
 PORT = os.environ.get("PORT") or "8080"
 if __name__ == "__main__":

@@ -125,10 +125,8 @@
             index++;
             if (index === text.length) {
               clearInterval(interval);
-              responseBox.classList.remove('blinking'); // Stop blinking after full response
             }
           }, 50); // Adjust typing speed
-          responseBox.classList.add('blinking');
         } else {
           responseBox.textContent = 'No chat :(';
         }
