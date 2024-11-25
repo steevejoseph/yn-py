@@ -20,7 +20,7 @@ with open(path_to_file) as f:
     config = json.load(f)
     # print(config)
 
-cert = credentials.Certificate(config)
+cert = credentials.Certificate(path_to_file)
 app = firebase_admin.initialize_app(credential=cert)
 db = firestore.client()
 
