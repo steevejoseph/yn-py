@@ -32,6 +32,7 @@ if not encoded_credentials:
 
 # Decode the string and parse it as JSON
 decoded_credentials = json.loads(base64.b64decode(encoded_credentials).decode("utf-8"))
+print("typeof decoded_credentials:", type(decoded_credentials))
 
 # Initialize Firebase
 if not firebase_admin._apps:
