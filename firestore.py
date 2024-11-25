@@ -1,21 +1,10 @@
 import firebase_admin
-from firebase_admin import firestore, credentials
-import os
+from firebase_admin import credentials, firestore
+
 from dotenv import load_dotenv
 load_dotenv()
-import logging
-import sys
-import json 
 
-firebase_config = os.environ.get("FIREBASE_CONFIG")
-
-if firebase_config == None:
-    logging.fatal("No firebase config :(, shutting down")
-    sys.exit(1)
-    
-firebase_config = json.loads(firebase_config)
-cert = credentials.Certificate(firebase_config)
-
+cert = credentials.Certificate("./firebase.json")
 app = firebase_admin.initialize_app(credential=cert)
 db = firestore.client()
 
