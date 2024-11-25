@@ -4,7 +4,7 @@ from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 load_dotenv()
 
-cert = credentials.Certificate("./firebase.json")
+cert = credentials.Certificate("firebase.json")
 app = firebase_admin.initialize_app(credential=cert)
 db = firestore.client()
 
