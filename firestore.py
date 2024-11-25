@@ -1,10 +1,17 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
+import os
 
 from dotenv import load_dotenv
 load_dotenv()
 
-cert = credentials.Certificate("firebase.json")
+path_to_file = os.path.join(os.getcwd(), "firebase.json")
+print("current directory:", os.getcwd())
+
+if not os.path.exists(path_to_file):
+    raise FileNotFoundError(f"{path_to_file} not found")
+
+cert = credentials.Certificate(path_to_file)
 app = firebase_admin.initialize_app(credential=cert)
 db = firestore.client()
 
