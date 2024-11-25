@@ -1,6 +1,7 @@
-from flask import Flask, request, Response
+from flask import Flask, request, Response, render_template
 from openai import OpenAI
 import os
+from flask_cors import CORS
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -8,6 +9,7 @@ load_dotenv()
 app = Flask(__name__)
 api_key = os.environ["YN_KEY"]
 client = OpenAI(api_key=api_key)
+CORS(app)
 
 class ResponseMessage:
     def __init__(self, status, message) -> None:
@@ -17,7 +19,7 @@ class ResponseMessage:
     
 @app.route('/', methods=["GET"])
 def handle_home():
-    return Response("Welcome to API", 200)
+    return render_template("index.html")
 
 @app.route('/chat', methods=['POST'])
 def handle_chat():
@@ -51,5 +53,6 @@ def handle_chat():
     responseMessage = completion.choices[0].message.content
     return Response(responseMessage, 200, mimetype="application/json")
 
+PORT = os.environ.get("PORT") or "8080"
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=PORT)
