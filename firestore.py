@@ -1,3 +1,4 @@
+import base64
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
@@ -15,13 +16,29 @@ if not os.path.exists(path_to_file):
     raise FileNotFoundError(f"{path_to_file} not found")
 
 
-config = None
-with open(path_to_file) as f:
-    config = json.load(f)
-    # print(config)
+# config = None
+# with open(path_to_file) as f:
+#     config = json.load(f)
+#     # print(config)
 
-cert = credentials.Certificate(path_to_file)
-app = firebase_admin.initialize_app(credential=cert)
+# cert = credentials.Certificate(path_to_file)
+# app = firebase_admin.initialize_app(credential=cert)
+
+# GPT start
+# Load the base64-encoded JSON string from the environment variable
+encoded_credentials = os.getenv("FIREBASE_CREDS")
+if not encoded_credentials:
+    raise ValueError("Environment variable FIREBASE_CREDS is not set")
+
+# Decode the string and parse it as JSON
+decoded_credentials = json.loads(base64.b64decode(encoded_credentials).decode("utf-8"))
+
+# Initialize Firebase
+if not firebase_admin._apps:
+    cred = credentials.Certificate(decoded_credentials)
+    firebase_admin.initialize_app(cred)
+# GPT end
+
 db = firestore.client()
 
 def add_user(user: dict):
