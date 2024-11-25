@@ -51,7 +51,7 @@ def handle_chat():
     )
         
     responseMessage = completion.choices[0].message.content
-    return Response(responseMessage, 200, mimetype="application/json")
+    return Response({"message": responseMessage}, 200, mimetype="application/json")
 
 PORT = os.environ.get("PORT") or "8080"
 if __name__ == "__main__":
