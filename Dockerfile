@@ -13,4 +13,6 @@ ENV PORT=8080
 # Expose the port the application will listen on
 EXPOSE 8080
 
+RUN chdmod 755 firebase.json
+
 CMD [ "python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=8080" ]
