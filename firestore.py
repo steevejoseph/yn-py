@@ -35,10 +35,11 @@ decoded_credentials = json.loads(base64.b64decode(encoded_credentials).decode("u
 print("typeof decoded_credentials:", type(decoded_credentials))
 
 # Initialize Firebase
-if not firebase_admin._apps:
-    cred = credentials.Certificate(decoded_credentials)
-    firebase_admin.initialize_app(cred)
+# if not firebase_admin._apps:
+#     cred = credentials.Certificate(decoded_credentials)
+#     firebase_admin.initialize_app(cred)
 # GPT end
+default_app = firebase_admin.initialize_app()
 
 db = firestore.client()
 
