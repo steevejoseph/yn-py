@@ -9,15 +9,18 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
-firebase_config = os.environ.get("FIREBASE_CONFIG")
-if firebase_config == None:
-    logging.fatal("No firebase config :(, shutting down")
-    sys.exit(1)
-
-firebase_config = json.loads(firebase_config)
-cert = credentials.Certificate(firebase_config)
-app = firebase_admin.initialize_app(credential=cert)
-db = firestore.client()
+# GPT start
+# Load the base64-encoded JSON string from the environment variable
+encoded_credentials = os.getenv("FIREBASE_CREDS")
+if not encoded_credentials:
+    raise ValueError("Environment variable FIREBASE_CREDS is not set")
+# Decode the string and parse it as JSON
+decoded_credentials = json.loads(base64.b64decode(encoded_credentials).decode("utf-8"))
+# Initialize Firebase
+if not firebase_admin._apps:
+    cred = credentials.Certificate(decoded_credentials)
+    firebase_admin.initialize_app(cred)
+# GPT end
 
 def add_user(user: dict):
     try:
