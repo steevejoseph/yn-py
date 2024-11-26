@@ -13,8 +13,11 @@ class User:
             setattr(self, key, value)
 
     def __str__(self):
-        fields = {field: getattr(self, field) for field in self._fields}
-        return f"{self.__class__.__name__}({pformat(fields)})"
+        # Use pformat to pretty-print the dictionary of attributes
+        attrs = vars(self)
+        # Convert the attributes to a pretty string format
+        pretty_str = f"User({self.__class__.__name__}):\n{pformat(attrs, indent=2)}"
+        return pretty_str
 
     def to_dict(self):
         return self.__dict__
@@ -31,8 +34,11 @@ class ChatCompletion:
             setattr(self, key, value)
 
     def __str__(self):
-        fields = {field: getattr(self, field) for field in self._fields}
-        return f"{self.__class__.__name__}({pformat(fields)})"
+        # Use pformat to pretty-print the dictionary of attributes
+        attrs = vars(self)
+        # Convert the attributes to a pretty string format
+        pretty_str = f"User({self.__class__.__name__}):\n{pformat(attrs, indent=2)}"
+        return pretty_str
 
     def to_dict(self):
         return self.__dict__
