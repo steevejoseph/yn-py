@@ -1,18 +1,29 @@
+import json
 from flask import Flask, request, Response, render_template, jsonify
-from openai import OpenAI
+from openai import OpenAI, ChatCompletion
 import os
 from flask_cors import CORS
 import mongoengine
 
 from dotenv import load_dotenv
-from mongodb import add_user
+from mongodb import add_chat, add_user
+from type_definitions import User
 
 
 load_dotenv()
 
+
+class MyClassJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, object):
+            return obj.to_dict()  # Serialize MyClass instances using to_dict
+        return super().default(obj)  # Let the default encoder handle other types
+
+
 app = Flask(__name__)
+app.json_encoder = MyClassJSONEncoder
 api_key = os.environ["YN_KEY"]
-client = OpenAI(api_key=api_key)
+open_ai_client = OpenAI(api_key=api_key)
 CORS(app)
 
 
@@ -20,6 +31,17 @@ def create_response(message: str, status_code: int, data=None, reason=None) -> R
     res = jsonify({"message": message, "data": data, "reason": reason})
     res.status_code = status_code
     return res
+
+
+def create_chat_completion(content: str, role: str) -> ChatCompletion:
+    return open_ai_client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": f"Speak as if you were a {role}."},
+            {"role": "user", "content": content},
+        ],
+        max_tokens=100,
+    )
 
 
 @app.route('/', methods=["GET"])
@@ -42,33 +64,31 @@ def handle_chat() -> Response:
     if content == None:
         return create_response("Please specify 'content' in your json", 400)
 
-    completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": f"Speak as if you were a {role}."},
-            {
-                "role": "user",
-                "content": content
-            }
-        ],
-        max_tokens=100
-    )
+    completion = create_chat_completion(content, role)
+    # print(f"completion: {completion}")
+    completion = add_chat(completion)
+    responseMessage = completion.content
 
-    responseMessage = completion.choices[0].message.content
     return create_response(responseMessage, 200)
 
 
 @app.route("/user", methods=["POST"])
 def handle_add_user() -> Response:
     data = request.get_json()
-    user = data.get("user")
+    user_dict = data.get("user")
+    user = User(**user_dict)
+
+    # user: User = data.get("user")
 
     try:
         new_user = add_user(user)
         return create_response("user added successfully", 200, {"user": new_user})
     except mongoengine.ValidationError as ve:
         return create_response(
-            "invalid input", 400, reason=str(ve), data={"user": user}
+            "Bad request, please include valid input",
+            400,
+            reason=str(ve),
+            data={"user": user},
         )
     except Exception as e:
         return create_response(
