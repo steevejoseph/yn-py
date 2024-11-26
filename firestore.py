@@ -1,4 +1,6 @@
 import base64
+import logging
+import sys
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
@@ -7,40 +9,14 @@ import json
 from dotenv import load_dotenv
 load_dotenv()
 
-path_to_file = os.path.join(os.getcwd(), "firebase.json")
-print("current directory:", os.getcwd())
-print("ls:", os.system("ls -l"))
+firebase_config = os.environ.get("FIREBASE_CONFIG")
+if firebase_config == None:
+    logging.fatal("No firebase config :(, shutting down")
+    sys.exit(1)
 
-
-if not os.path.exists(path_to_file):
-    raise FileNotFoundError(f"{path_to_file} not found")
-
-
-# config = None
-# with open(path_to_file) as f:
-#     config = json.load(f)
-#     # print(config)
-
-# cert = credentials.Certificate(path_to_file)
-# app = firebase_admin.initialize_app(credential=cert)
-
-# GPT start
-# Load the base64-encoded JSON string from the environment variable
-encoded_credentials = os.getenv("FIREBASE_CREDS")
-if not encoded_credentials:
-    raise ValueError("Environment variable FIREBASE_CREDS is not set")
-
-# Decode the string and parse it as JSON
-decoded_credentials = json.loads(base64.b64decode(encoded_credentials).decode("utf-8"))
-print("typeof decoded_credentials:", type(decoded_credentials))
-
-# Initialize Firebase
-# if not firebase_admin._apps:
-#     cred = credentials.Certificate(decoded_credentials)
-#     firebase_admin.initialize_app(cred)
-# GPT end
-default_app = firebase_admin.initialize_app()
-
+firebase_config = json.loads(firebase_config)
+cert = credentials.Certificate(firebase_config)
+app = firebase_admin.initialize_app(credential=cert)
 db = firestore.client()
 
 def add_user(user: dict):
