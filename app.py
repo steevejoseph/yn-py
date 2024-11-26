@@ -6,7 +6,7 @@ from flask_cors import CORS
 import mongoengine
 
 from dotenv import load_dotenv
-from mongodb import add_chat, add_user
+from mongodb import add_chat, add_user, get_chats_for_user, get_user_by_id
 from type_definitions import User
 
 
@@ -56,8 +56,6 @@ def handle_chat() -> Response:
     except:
         return create_response("Please submit valid JSON", 400)
 
-    print("data:", data)
-
     content = data.get("content")
     role = data.get("role") or "helpful assistant"
 
@@ -66,10 +64,9 @@ def handle_chat() -> Response:
 
     completion = create_chat_completion(content, role)
     # print(f"completion: {completion}")
-    completion = add_chat(completion)
-    responseMessage = completion.content
+    completion = add_chat(completion, current_user)
 
-    return create_response(responseMessage, 200)
+    return create_response("Successfully created chat", 200, data={"chat": completion})
 
 
 @app.route("/user", methods=["POST"])
@@ -94,6 +91,39 @@ def handle_add_user() -> Response:
         return create_response(
             "failed to add user :\(", 500, reason=str(e), data={"user": user}
         )
+
+
+@app.route("/users/<id>/chats", methods=["GET"])
+def handle_get_user_chats(id):
+
+    if not id:
+        return create_response("Please specify a user ID", 400)
+
+    userModel = get_user_by_id(id)
+
+    if not userModel:
+        return create_response(f"No user found for id [{id}]", 404)
+
+    chatModels = get_chats_for_user(id)
+
+    if not chatModels or len(chatModels) == 0:
+        return create_response(f"No chats for user with email [{userModel.email}]", 404)
+
+    return create_response(
+        "Successfully fetched chats for user", 200, data={"chats": chatModels}
+    )
+
+
+@app.route("/users/<id>", methods=["GET"])
+def handle_get_user_by_id(id):
+    if not id:
+        return create_response("Please specify a user ID", 400)
+
+    userModel = get_user_by_id(id)
+
+    if not userModel:
+        return create_response(f"No user found for id [{id}]", 404)
+    return create_response(f"Successfully fetched user", 200, data={"user": userModel})
 
 
 PORT = os.environ.get("PORT") or "8080"
