@@ -8,7 +8,6 @@ from type_definitions import ChatCompletion, User
 
 class BaseDocument(Document):
     meta = {"abstract": True}
-    collection_prefix = StringField(required=True)
 
     def __str__(self):
         fields = {field: getattr(self, field) for field in self._fields}
@@ -16,7 +15,6 @@ class BaseDocument(Document):
 
 
 class ChatModel(BaseDocument):
-    collection_prefix = StringField(required=True, default="chats")
 
     # We need to figure out how to generate this
     link = StringField(required=False)
@@ -46,7 +44,6 @@ class ChatModel(BaseDocument):
 
 
 class UserModel(BaseDocument):
-    collection_prefix = StringField(required=True, default="users")
     name = StringField(required=True)
     email = EmailField(required=True, unique=True)
     password = StringField(required=True)

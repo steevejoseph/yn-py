@@ -64,7 +64,7 @@ def handle_chat() -> Response:
 
     completion = create_chat_completion(content, role)
     # print(f"completion: {completion}")
-    completion = add_chat(completion, current_user)
+    completion = add_chat(completion, None)
 
     return create_response("Successfully created chat", 200, data={"chat": completion})
 
@@ -74,8 +74,6 @@ def handle_add_user() -> Response:
     data = request.get_json()
     user_dict = data.get("user")
     user = User(**user_dict)
-
-    # user: User = data.get("user")
 
     try:
         new_user = add_user(user)
