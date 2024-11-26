@@ -2,10 +2,11 @@ from flask import Flask, request, Response, render_template, jsonify
 from openai import OpenAI
 import os
 from flask_cors import CORS
+import mongoengine
 
 from dotenv import load_dotenv
+from mongodb import add_user
 
-from firestore import add_user
 
 load_dotenv()
 
@@ -15,18 +16,19 @@ client = OpenAI(api_key=api_key)
 CORS(app)
 
 
-def create_response(message: str, status_code: int, data=None) -> Response:
-    res = jsonify({"message": message, "data": data})
+def create_response(message: str, status_code: int, data=None, reason=None) -> Response:
+    res = jsonify({"message": message, "data": data, "reason": reason})
     res.status_code = status_code
     return res
 
 
 @app.route('/', methods=["GET"])
-def handle_home():
+def handle_home() -> Response:
     return render_template("index.html")
 
+
 @app.route('/chat', methods=['POST'])
-def handle_chat():
+def handle_chat() -> Response:
     try:
         data = request.get_json()
     except:
@@ -57,15 +59,21 @@ def handle_chat():
 
 
 @app.route("/user", methods=["POST"])
-def handle_add_user():
+def handle_add_user() -> Response:
     data = request.get_json()
     user = data.get("user")
 
     try:
         new_user = add_user(user)
         return create_response("user added successfully", 200, {"user": new_user})
+    except mongoengine.ValidationError as ve:
+        return create_response(
+            "invalid input", 400, reason=str(ve), data={"user": user}
+        )
     except Exception as e:
-        return create_response("failed to add user :\(", 500, {"reason": e})
+        return create_response(
+            "failed to add user :\(", 500, reason=str(e), data={"user": user}
+        )
 
 
 PORT = os.environ.get("PORT") or "8080"

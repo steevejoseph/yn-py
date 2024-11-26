@@ -1,5 +1,6 @@
-firebase_admin==6.6.0
 Flask==2.2.5
 flask_cors==5.0.0
-openai==1.55.0
+mongoengine==0.29.1
+openai==1.55.1
+pymongo==4.10.1
 python-dotenv==1.0.1
