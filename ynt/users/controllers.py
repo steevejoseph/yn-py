@@ -18,6 +18,7 @@ def add_user(user: User) -> UserModel:
         name=user.name,
         email=user.email,
         # TODO(@steevejoseph): Add hash password logic
+        # TODO(@steevejoseph): Add hash password logic
         password=user.password,
     )
 
