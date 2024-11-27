@@ -44,7 +44,7 @@ def handle_get_user_chats(id):
 
     chatModels = get_chats_for_user(id)
 
-    if not chatModels or len(chatModels) == 0:
+    if chatModels == None:
         return create_response(f"No chats for user with email [{userModel.email}]", 404)
 
     return create_response(
