@@ -18,6 +18,7 @@ def add_user(user: User) -> UserModel:
         name=user.name,
         email=user.email,
         # TODO(@steevejoseph): Add hash password logic
+        # Issue URL: https://github.com/steevejoseph/yn-py/issues/1
         password=user.password,
     )
 
