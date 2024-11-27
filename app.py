@@ -13,7 +13,8 @@ from ynt.index.views import index_router
 
 
 app = Flask(__name__)
-app.json_encoder_class = MyClassJSONEncoder
+# app.json_encoder_class = MyClassJSONEncoder
+app.json_encoder = MyClassJSONEncoder
 CORS(app)
 
 PORT = os.environ.get("PORT") or "8080"

@@ -1,8 +1,9 @@
 from flask import Blueprint, Response, request
 import mongoengine
-from mongodb import add_user, get_chats_for_user, get_user_by_id
+
 from type_definitions import User
 from utils import create_response
+from ynt.users.controllers import add_user, get_chats_for_user, get_user_by_id
 
 
 user_router = Blueprint("user_router", __name__, template_folder="templates")

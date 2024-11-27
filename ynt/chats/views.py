@@ -1,8 +1,8 @@
 from flask import Blueprint, Response, request
-import mongoengine
-from mongodb import add_chat, add_user, get_chats_for_user, get_user_by_id
-from type_definitions import User
-from utils import create_chat_completion, create_response
+
+from utils import create_response
+from ynt.chats.controllers import add_chat
+from ynt.chats.utils import create_chat_completion
 
 chat_router = Blueprint("chat_router", __name__, template_folder="templates")
 
