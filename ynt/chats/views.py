@@ -8,7 +8,7 @@ from ynt.chats.utils import create_chat_completion
 chat_router = Blueprint("chat_router", __name__, template_folder="templates")
 
 
-@chat_router.route("/chat", methods=["POST"])
+@chat_router.route("/new", methods=["POST"])
 def handle_chat() -> Response:
     try:
         data = request.get_json()
